@@ -1,4 +1,7 @@
 
+const salesRoutes = require("./routes/salesRoutes");
+const stockRoutes = require("./routes/stockRoutes");
+const ledgerRoutes = require("./routes/ledgerRoutes");
 const companyRoutes = require("./routes/companyRoutes");
 const authRoutes = require("./routes/authRoutes");
 const express = require("express");
@@ -18,6 +21,9 @@ app.get("/", (req, res) => {
 const PORT = 5000;
 app.use("/api/auth", authRoutes);
 app.use("/api/company", companyRoutes);
+app.use("/api/ledger", ledgerRoutes);
+app.use("/api/stock", stockRoutes);
+app.use("/api/sales", salesRoutes);
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
