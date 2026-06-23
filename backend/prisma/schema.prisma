@@ -32,6 +32,7 @@ model Company {
 ledgers    Ledger[]
 stockItems StockItem[]
 salesVouchers SalesVoucher[]
+purchaseVouchers PurchaseVoucher[]
 }
 
 model Ledger {
@@ -75,4 +76,22 @@ model SalesVoucher {
   company     Company @relation(fields: [companyId], references: [id])
 
   createdAt   DateTime @default(now())
+}
+
+
+model PurchaseVoucher {
+  id           Int      @id @default(autoincrement())
+  invoiceNo    String   @unique
+
+  supplierName String
+
+  itemName     String
+  quantity     Float
+  rate         Float
+  amount       Float
+
+  companyId    Int
+  company      Company @relation(fields: [companyId], references: [id])
+
+  createdAt    DateTime @default(now())
 }

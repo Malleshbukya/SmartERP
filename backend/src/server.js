@@ -1,4 +1,5 @@
 
+const purchaseRoutes =require("./routes/purchaseRoutes");
 const salesRoutes = require("./routes/salesRoutes");
 const stockRoutes = require("./routes/stockRoutes");
 const ledgerRoutes = require("./routes/ledgerRoutes");
@@ -24,6 +25,7 @@ app.use("/api/company", companyRoutes);
 app.use("/api/ledger", ledgerRoutes);
 app.use("/api/stock", stockRoutes);
 app.use("/api/sales", salesRoutes);
+app.use("/api/purchase", purchaseRoutes);
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
