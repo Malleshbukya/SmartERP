@@ -1,55 +1,159 @@
 const prisma = require("../config/prismaClient");
 
+// Create Sales Voucher
 const createSalesVoucher = async (req, res) => {
   try {
     const {
-      invoiceNo,
-      customerName,
-      itemName,
+      companyId,
+      ledgerId,
+      stockItemId,
       quantity,
       rate,
-      companyId,
     } = req.body;
 
-    const amount = quantity * rate;
+    if (
+      !companyId ||
+      !ledgerId ||
+      !stockItemId ||
+      !quantity ||
+      !rate
+    ) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
 
-    const voucher = await prisma.salesVoucher.create({
+    // Get Customer Ledger
+   // Check Company Ownership
+const company = await prisma.company.findFirst({
+  where: {
+    id: Number(companyId),
+    userId: req.user.id,
+  },
+});
+
+if (!company) {
+  return res.status(404).json({
+    message: "Company not found",
+  });
+}
+
+// Get Customer Ledger
+const ledger = await prisma.ledger.findFirst({
+  where: {
+    id: Number(ledgerId),
+    companyId: Number(companyId),
+    company: {
+      userId: req.user.id,
+    },
+  },
+});
+
+    if (!ledger) {
+      return res.status(404).json({
+        message: "Customer not found",
+      });
+    }
+
+    // Get Stock Item
+    // Get Stock Item
+const stock = await prisma.stockItem.findFirst({
+  where: {
+    id: Number(stockItemId),
+    companyId: Number(companyId),
+    company: {
+      userId: req.user.id,
+    },
+  },
+});
+
+    if (!stock) {
+      return res.status(404).json({
+        message: "Stock Item not found",
+      });
+    }
+
+    if (stock.openingStock < Number(quantity)) {
+      return res.status(400).json({
+        message: "Insufficient Stock",
+      });
+    }
+
+    const amount =
+      Number(quantity) * Number(rate);
+
+    const sale = await prisma.salesVoucher.create({
       data: {
-        invoiceNo,
-        customerName,
-        itemName,
-        quantity,
-        rate,
+        invoiceNo: "SAL-" + Date.now(),
+        customerName: ledger.name,
+        itemName: stock.itemName,
+        quantity: Number(quantity),
+        rate: Number(rate),
         amount,
-        companyId,
+        companyId: Number(companyId),
+      },
+    });
+
+    // Reduce Stock
+    await prisma.stockItem.update({
+      where: {
+        id: Number(stockItemId),
+      },
+      data: {
+        openingStock:
+          stock.openingStock - Number(quantity),
+
+        stockValue:
+          (stock.openingStock - Number(quantity)) *
+          stock.rate,
       },
     });
 
     res.status(201).json({
-      message: "Sales Voucher Created",
-      voucher,
+      message: "Sales Voucher Created Successfully",
+      sale,
     });
+
   } catch (error) {
     console.log(error);
+
     res.status(500).json({
       message: "Server Error",
     });
   }
 };
 
+// Get Sales
 const getSalesVouchers = async (req, res) => {
   try {
     const { companyId } = req.query;
 
-    const vouchers = await prisma.salesVoucher.findMany({
-      where: {
-        companyId: Number(companyId),
-      },
-    });
+    // Verify Company Ownership
+const company = await prisma.company.findFirst({
+  where: {
+    id: Number(companyId),
+    userId: req.user.id,
+  },
+});
 
-    res.json(vouchers);
+if (!company) {
+  return res.json([]);
+}
+
+const sales = await prisma.salesVoucher.findMany({
+  where: {
+    companyId: Number(companyId),
+  },
+  orderBy: {
+    id: "desc",
+  },
+});
+
+    res.json(sales);
+
   } catch (error) {
     console.log(error);
+
     res.status(500).json({
       message: "Server Error",
     });

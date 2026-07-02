@@ -1,4 +1,8 @@
 
+require("dotenv").config();
+const reportRoutes = require("./routes/reportRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
+const exportRoutes = require("./routes/exportRoutes");
 const purchaseRoutes =require("./routes/purchaseRoutes");
 const salesRoutes = require("./routes/salesRoutes");
 const stockRoutes = require("./routes/stockRoutes");
@@ -26,6 +30,9 @@ app.use("/api/ledger", ledgerRoutes);
 app.use("/api/stock", stockRoutes);
 app.use("/api/sales", salesRoutes);
 app.use("/api/purchase", purchaseRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/reports", reportRoutes);
+app.use("/api/export", exportRoutes);
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
