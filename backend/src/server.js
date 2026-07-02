@@ -1,5 +1,6 @@
 
 require("dotenv").config();
+const excelRoutes = require("./routes/excelRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const exportRoutes = require("./routes/exportRoutes");
@@ -33,6 +34,7 @@ app.use("/api/purchase", purchaseRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/export", exportRoutes);
+app.use("/api/excel", excelRoutes);
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

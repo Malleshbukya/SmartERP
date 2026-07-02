@@ -3,28 +3,41 @@ import { useNavigate } from "react-router-dom";
 function Navbar() {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Remove JWT Token
-    localStorage.removeItem("token");
+  const userName = localStorage.getItem("userName") || "User";
 
-    // Redirect to Login Page
+  const today = new Date().toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+
+  const handleLogout = () => {
+    const confirmLogout = window.confirm(
+      "Are you sure you want to logout?"
+    );
+
+    if (!confirmLogout) return;
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("userName");
+
     navigate("/");
   };
 
   return (
     <div
       style={{
-        height: "60px",
+        height: "70px",
         backgroundColor: "#1e293b",
         color: "white",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "0 20px",
-        boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+        padding: "0 25px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
       }}
     >
-      <h2>SmartERP</h2>
+      <h2>📊 SmartERP</h2>
 
       <div
         style={{
@@ -33,19 +46,26 @@ function Navbar() {
           gap: "20px",
         }}
       >
-        <span>
-  Welcome, {localStorage.getItem("userName")}
-</span>
+        <div style={{ textAlign: "right" }}>
+          <div style={{ fontWeight: "bold" }}>
+            Welcome, {userName}
+          </div>
+
+          <small style={{ color: "#cbd5e1" }}>
+            📅 {today}
+          </small>
+        </div>
 
         <button
           onClick={handleLogout}
           style={{
-            padding: "8px 15px",
+            padding: "8px 18px",
             backgroundColor: "#ef4444",
             color: "white",
             border: "none",
-            borderRadius: "5px",
+            borderRadius: "6px",
             cursor: "pointer",
+            fontWeight: "bold",
           }}
         >
           Logout

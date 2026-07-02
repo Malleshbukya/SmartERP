@@ -39,15 +39,53 @@ function Reports() {
       link.download = "SmartERP_Report.pdf";
 
       document.body.appendChild(link);
-
       link.click();
-
       document.body.removeChild(link);
 
       window.URL.revokeObjectURL(url);
+
     } catch (error) {
       console.log(error);
       alert("Failed to download PDF");
+    }
+  };
+
+  // Download Excel
+  const downloadExcel = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        "http://localhost:5000/api/excel/sales",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to download Excel");
+      }
+
+      const blob = await response.blob();
+
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "SalesReport.xlsx";
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.log(error);
+      alert("Failed to download Excel");
     }
   };
 
@@ -55,9 +93,11 @@ function Reports() {
     <DashboardLayout>
       <h1>Reports</h1>
 
-      {/* Download Button */}
+      {/* Download Buttons */}
       <div
         style={{
+          display: "flex",
+          gap: "15px",
           marginBottom: "20px",
         }}
       >
@@ -74,6 +114,21 @@ function Reports() {
           }}
         >
           📄 Download PDF
+        </button>
+
+        <button
+          onClick={downloadExcel}
+          style={{
+            background: "#2563eb",
+            color: "white",
+            border: "none",
+            padding: "10px 20px",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+        >
+          📊 Download Excel
         </button>
       </div>
 
